@@ -1,0 +1,29 @@
+name: Build Desktop App
+
+on:
+  workflow_dispatch: # Manual trigger from GitHub UI
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Build Tauri app
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: v__VERSION__
+          releaseName: "Commissioner Dashboard v__VERSION__"
+          releaseBody: "Windows desktop app for the Commissioner Meeting Dashboard."
+          releaseDraft: false
+          prerelease: false
